@@ -1,4 +1,4 @@
-package com.example.jimmy_polancoap2_p2
+package com.example.jimmy_polancoAP2_p2
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
