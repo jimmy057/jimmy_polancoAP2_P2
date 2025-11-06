@@ -16,7 +16,9 @@ fun GastosScreen(
     viewModel: GastosViewModel = GastosViewModel()
 ) {
     val gastos by viewModel.gastos.collectAsState()
-    var descripcion by remember { mutableStateOf("") }
+    var suplidor by remember { mutableStateOf("") }
+    var ncf by remember { mutableStateOf("") }
+    var itbis by remember { mutableStateOf("") }
     var monto by remember { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
@@ -27,9 +29,16 @@ fun GastosScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    if (descripcion.isNotBlank() && monto.isNotBlank()) {
-                        viewModel.agregarGasto(descripcion, monto.toDouble())
-                        descripcion = ""
+                    if (suplidor.isNotBlank() && ncf.isNotBlank() && itbis.isNotBlank() && monto.isNotBlank()) {
+                        viewModel.agregarGasto(
+                            suplidor = suplidor,
+                            ncf = ncf,
+                            itbis = itbis.toDouble(),
+                            monto = monto.toDouble()
+                        )
+                        suplidor = ""
+                        ncf = ""
+                        itbis = ""
                         monto = ""
                     }
                 }
@@ -45,11 +54,27 @@ fun GastosScreen(
                 .fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            // Campos para crear un gasto
             OutlinedTextField(
-                value = descripcion,
-                onValueChange = { descripcion = it },
-                label = { Text("Descripción") },
+                value = suplidor,
+                onValueChange = { suplidor = it },
+                label = { Text("Suplidor") },
                 modifier = Modifier.fillMaxWidth()
+            )
+
+            OutlinedTextField(
+                value = ncf,
+                onValueChange = { ncf = it },
+                label = { Text("NCF") },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            OutlinedTextField(
+                value = itbis,
+                onValueChange = { itbis = it },
+                label = { Text("ITBIS") },
+                modifier = Modifier.fillMaxWidth(),
+                singleLine = true
             )
 
             OutlinedTextField(
@@ -67,7 +92,11 @@ fun GastosScreen(
                 style = MaterialTheme.typography.titleLarge
             )
 
-            LazyColumn(modifier = Modifier.fillMaxSize()) {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f)
+            ) {
                 items(gastos) { gasto ->
                     GastoItem(gasto)
                 }
@@ -85,9 +114,13 @@ fun GastoItem(gasto: Gasto) {
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         Column(modifier = Modifier.padding(12.dp)) {
-            Text(text = gasto.descripcion, style = MaterialTheme.typography.bodyLarge)
-            Text(text = "Monto: ${gasto.monto}")
-            Text(text = "Fecha: ${gasto.fecha}")
+            Text(text = "ID: ${gasto.gastoId ?: "Sin ID"}")
+            Text(text = "Suplidor: ${gasto.suplidor ?: "Desconocido"}")
+            Text(text = "NCF: ${gasto.ncf ?: "Sin NCF"}")
+            Text(text = "ITBIS: ${gasto.itbis ?: 0.0}")
+            Text(text = "Monto: ${gasto.monto ?: 0.0}")
+            Text(text = "Fecha: ${gasto.fecha ?: "Sin fecha"}")
         }
     }
 }
+
