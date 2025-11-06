@@ -19,8 +19,9 @@ class GastosViewModel : ViewModel() {
             try {
                 val lista = repository.obtenerGastos().map { gasto ->
                     gasto.copy(
-                        descripcion = gasto.descripcion.ifBlank { "Sin descripción" },
-                        fecha = gasto.fecha.ifBlank { "Sin fecha" }
+                        suplidor = gasto.suplidor?.ifBlank { "Sin suplidor" } ?: "Sin suplidor",
+                        ncf = gasto.ncf?.ifBlank { "Sin NCF" } ?: "Sin NCF",
+                        fecha = gasto.fecha?.ifBlank { "Sin fecha" } ?: "Sin fecha"
                     )
                 }
                 _gastos.value = lista
@@ -30,21 +31,26 @@ class GastosViewModel : ViewModel() {
         }
     }
 
-
-    fun agregarGasto(descripcion: String, monto: Double) {
+    fun agregarGasto(suplidor: String, ncf: String, itbis: Double, monto: Double) {
         viewModelScope.launch {
             try {
                 val nuevo = Gasto(
-                    descripcion = descripcion,
-                    monto = monto,
-                    fecha = "2025-11-05",
+                    gastoId = 0,
+                    fecha = "2025-11-05T00:00:00",
+                    suplidor = suplidor,
+                    ncf = ncf,
+                    itbis = itbis,
+                    monto = monto
                 )
                 repository.agregarGasto(nuevo)
                 cargarGastos()
+                println("Gasto agregado correctamente")
             } catch (e: Exception) {
                 println("Error al agregar gasto: ${e.message}")
             }
         }
     }
 }
+
+
 
